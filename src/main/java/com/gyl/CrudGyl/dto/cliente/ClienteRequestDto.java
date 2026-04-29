@@ -1,4 +1,22 @@
 package com.gyl.CrudGyl.dto.cliente;
 
-public record ClienteRequestDto() {
+import jakarta.validation.constraints.NotBlank;
+
+public record ClienteRequestDto(
+        @NotBlank(message = "El nombre es obligatorio")
+        String nombre,
+
+        @NotBlank(message = "El apellido es obligatorio")
+        String apellido,
+
+        @NotBlank(message = "El correo es obligatorio")
+        String correo,
+
+        @NotBlank(message = "El telefono es obligatorio")
+        String telefono,
+
+        @NotBlank(message = "La direccion es obligatoria")
+        String direccion
+) {
+
 }
