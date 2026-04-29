@@ -10,9 +10,9 @@ public interface TipoProductoService {
 
     List<TipoProductoResponseDto> listar();
 
-    List<TipoProductoResponseDto> buscarNombre(String nombre);
-
     TipoProductoResponseDto buscarPorId(Long id);
+
+    List<TipoProductoResponseDto> buscarNombre(String nombre);
 
     TipoProductoResponseDto actualizar(Long id, TipoProductoRequestDto dto);
 
