@@ -11,7 +11,7 @@ public class TipoProductoMapper {
 
     public static TipoProducto toEntity(TipoProductoRequestDto dto) {
         TipoProducto tipoProducto = new TipoProducto();
-        tipoProducto.setNombre(dto.Nombre());
+        tipoProducto.setNombre(dto.nombre());
         tipoProducto.setDescripcion(dto.descripcion());
 
         return tipoProducto;
@@ -26,7 +26,7 @@ public class TipoProductoMapper {
     }
 
     public static void updateEntity(TipoProducto tipoProducto, TipoProductoRequestDto dto) {
-        tipoProducto.setNombre(dto.Nombre());
+        tipoProducto.setNombre(dto.nombre());
         tipoProducto.setDescripcion(dto.descripcion());
     }
 }
