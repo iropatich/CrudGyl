@@ -43,7 +43,7 @@ public class ProductoController {
     }
 
     @DeleteMapping("/id/{id}")
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void eliminar(@PathVariable Long id) {
         productoService.eliminar(id);
     }
