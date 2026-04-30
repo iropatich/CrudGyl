@@ -32,7 +32,6 @@ public class VentaServiceImpl implements VentaService {
         this.productoRepository = productoRepository;
     }
 
-
     @Override
     public VentaResponseDto crear(VentaRequestDto dto) {
         Cliente cliente = clienteRepository.findById(dto.idCliente())
@@ -43,7 +42,7 @@ public class VentaServiceImpl implements VentaService {
         venta.setFecha(LocalDateTime.now());
         venta.setCliente(cliente);
 
-        List<DetalleVenta> detallesVenta = new ArrayList<>();
+        List<DetalleVenta> listaDetallesVenta = new ArrayList<>();
         double total = 0;
 
         for (DetalleVentaRequestDto detalle : dto.detallesVenta()) {
@@ -69,10 +68,10 @@ public class VentaServiceImpl implements VentaService {
             detalleVenta.setVenta(venta);
             detalleVenta.setProducto(producto);
 
-            detallesVenta.add(detalleVenta);
+            listaDetallesVenta.add(detalleVenta);
             total += subtotal;
         }
-        venta.setDetallesVenta(detallesVenta);
+        venta.setDetallesVenta(listaDetallesVenta);
         venta.setTotal(total);
 
         Venta guardada = ventaRepository.save(venta);
