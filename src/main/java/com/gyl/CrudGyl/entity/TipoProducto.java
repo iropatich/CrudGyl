@@ -15,7 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class TipoProducto {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, length = 100)

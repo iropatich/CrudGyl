@@ -1,35 +1,35 @@
 package com.gyl.CrudGyl.entity;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Entity
-@Table(name="productos")
+@Table(name = "ventas")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-
-//esto en poo es encapsulamiento
-public class Producto {
+public class Venta {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
-    private String nombre;
+    @Column(nullable = false)
+    private LocalDateTime fecha;
 
     @Column(nullable = false)
-    private Double precio;
-
-    @Column(nullable = false)
-    private Integer stock;
+    private Double total;
 
     @ManyToOne
-    @JoinColumn(name = "idTipoProducto", nullable = false)
-    private TipoProducto tipoProducto;
+    @JoinColumn(name = "idCliente", nullable = false)
+    private Cliente cliente;
+
+    @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL)
+    private List<DetalleVenta> detallesVenta;
 }
