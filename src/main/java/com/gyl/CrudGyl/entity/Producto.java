@@ -17,7 +17,7 @@ import lombok.Setter;
 //esto en poo es encapsulamiento
 public class Producto {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, length = 100)
