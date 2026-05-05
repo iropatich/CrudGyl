@@ -32,7 +32,7 @@ public class ControladorGlobalException {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-        @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> manejarValidaciones(MethodArgumentNotValidException exception) {
         Map<String, String> errores = new HashMap<>();
 
@@ -40,11 +40,12 @@ public class ControladorGlobalException {
                 errores.put(error.getField(), error.getDefaultMessage())
         );
 
-        return ResponseEntity.badRequest().body(Map.of(
-                "fecha", LocalDateTime.now(),
-                "status", HttpStatus.BAD_REQUEST.value(),
-                "errores", errores
-        ));
+        Map<String, Object> body = new HashMap<>();
+        body.put("fecha", LocalDateTime.now());
+        body.put("status", 400);
+        body.put("errores", errores);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
     @ExceptionHandler(Exception.class)
