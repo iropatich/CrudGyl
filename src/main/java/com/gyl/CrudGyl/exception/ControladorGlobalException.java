@@ -22,6 +22,16 @@ public class ControladorGlobalException {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
+    @ExceptionHandler(StockInsuficienteException.class)
+    public ResponseEntity<Map<String, Object>> manejarStockInsuficiente(StockInsuficienteException exception) {
+        Map<String, Object> error = new HashMap<>();
+        error.put("fecha", LocalDateTime.now());
+        error.put("mensaje", exception.getMessage());
+        error.put("status", HttpStatus.NOT_FOUND.value());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
         @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> manejarValidaciones(MethodArgumentNotValidException exception) {
         Map<String, String> errores = new HashMap<>();
