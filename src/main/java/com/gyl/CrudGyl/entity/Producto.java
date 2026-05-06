@@ -29,6 +29,9 @@ public class Producto {
     @Column(nullable = false)
     private Integer stock;
 
+    @Column(nullable = false)
+    private Boolean estado = true;
+
     @ManyToOne
     @JoinColumn(name = "idTipoProducto", nullable = false)
     private TipoProducto tipoProducto;

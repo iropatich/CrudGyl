@@ -39,7 +39,7 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     public List<ProductoResponseDto> listar() {
-        return productoRepository.findAll()
+        return productoRepository.findAllByEstadoTrue()
                 .stream()
                 .map(ProductoMapper::toResponseDto)
                 .toList();
@@ -47,7 +47,7 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     public ProductoResponseDto buscarPorId(Long id) {
-        return productoRepository.findById(id)
+        return productoRepository.findByIdAndEstadoTrue(id)
                 .map(ProductoMapper::toResponseDto)
                 .orElseThrow(() -> new RecursosNoEncontradoException(
                         "no se encontro el Id " + id
@@ -73,17 +73,18 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     public void eliminar(Long id) {
-        Producto producto = productoRepository.findById(id)
+        Producto producto = productoRepository.findByIdAndEstadoTrue(id)
                 .orElseThrow(() -> new RecursosNoEncontradoException(
                         "No se encontró el id" + id
                 ));
 
-        productoRepository.delete(producto);
+        producto.setEstado(false);
+        productoRepository.save(producto);
     }
 
     @Override
     public List<ProductoResponseDto> buscarNombre(String nombre) {
-        List<ProductoResponseDto> productos = productoRepository.findByNombre(nombre)
+        List<ProductoResponseDto> productos = productoRepository.findByNombreAndEstadoTrue(nombre)
                 .stream()
                 .map(ProductoMapper::toResponseDto)
                 .toList();

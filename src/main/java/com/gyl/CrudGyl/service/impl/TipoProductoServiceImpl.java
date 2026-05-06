@@ -3,8 +3,10 @@ package com.gyl.CrudGyl.service.impl;
 import com.gyl.CrudGyl.dto.tipoProducto.TipoProductoRequestDto;
 import com.gyl.CrudGyl.dto.tipoProducto.TipoProductoResponseDto;
 import com.gyl.CrudGyl.entity.TipoProducto;
+import com.gyl.CrudGyl.exception.ProductosActivosException;
 import com.gyl.CrudGyl.exception.RecursosNoEncontradoException;
 import com.gyl.CrudGyl.mapper.TipoProductoMapper;
+import com.gyl.CrudGyl.repository.ProductoRepository;
 import com.gyl.CrudGyl.repository.TipoProductoRepository;
 import com.gyl.CrudGyl.service.interfaz.TipoProductoService;
 import org.springframework.stereotype.Service;
@@ -15,9 +17,11 @@ import java.util.List;
 public class TipoProductoServiceImpl implements TipoProductoService {
 
     private TipoProductoRepository tipoProductoRepository;
+    private ProductoRepository productoRepository;
 
-    public TipoProductoServiceImpl(TipoProductoRepository tipoProductoRepository) {
+    public TipoProductoServiceImpl(TipoProductoRepository tipoProductoRepository, ProductoRepository productoRepository) {
         this.tipoProductoRepository = tipoProductoRepository;
+        this.productoRepository = productoRepository;
     }
 
     @Override
@@ -29,7 +33,7 @@ public class TipoProductoServiceImpl implements TipoProductoService {
 
     @Override
     public List<TipoProductoResponseDto> listar() {
-        return tipoProductoRepository.findAll()
+        return tipoProductoRepository.findAllByEstadoTrue()
                 .stream()
                 .map(TipoProductoMapper::toResponseDto)
                 .toList();
@@ -37,7 +41,7 @@ public class TipoProductoServiceImpl implements TipoProductoService {
 
     @Override
     public List<TipoProductoResponseDto> buscarNombre(String nombre) {
-        List<TipoProductoResponseDto> tiposDeProducto = tipoProductoRepository.findByNombre(nombre)
+        List<TipoProductoResponseDto> tiposDeProducto = tipoProductoRepository.findByNombreAndEstadoTrue(nombre)
                 .stream()
                 .map(TipoProductoMapper::toResponseDto)
                 .toList();
@@ -51,7 +55,7 @@ public class TipoProductoServiceImpl implements TipoProductoService {
 
     @Override
     public TipoProductoResponseDto buscarPorId(Long id) {
-        return tipoProductoRepository.findById(id)
+        return tipoProductoRepository.findByIdAndEstadoTrue(id)
                 .map(TipoProductoMapper::toResponseDto)
                 .orElseThrow(() -> new RecursosNoEncontradoException(
                         "No se encontro el Id " + id
@@ -71,10 +75,23 @@ public class TipoProductoServiceImpl implements TipoProductoService {
 
     @Override
     public void eliminar(Long id) {
-        TipoProducto tipoProducto = tipoProductoRepository.findById(id)
+        TipoProducto tipoProducto = tipoProductoRepository.findByIdAndEstadoTrue(id)
                 .orElseThrow(() -> new RecursosNoEncontradoException(
                         "No se encontro el id " + id
                 ));
-        tipoProductoRepository.delete(tipoProducto);
+
+        validarProductosActivos(tipoProducto);
+        tipoProducto.setEstado(false);
+        tipoProductoRepository.save(tipoProducto);
+    }
+
+    private void validarProductosActivos(TipoProducto tipoProducto) {
+        boolean tieneProductosActivos = productoRepository.existsByTipoProductoAndEstadoTrue(tipoProducto);
+
+        if (tieneProductosActivos) {
+            throw new ProductosActivosException(
+                    "No se puede eliminar el tipo de producto porque tiene productos activos"
+            );
+        }
     }
 }

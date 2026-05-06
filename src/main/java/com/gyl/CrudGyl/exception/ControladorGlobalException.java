@@ -42,6 +42,16 @@ public class ControladorGlobalException {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
+    @ExceptionHandler(ProductosActivosException.class)
+    public ResponseEntity<Map<String, Object>> manejarProductosActivos(ProductosActivosException exception) {
+        Map<String, Object> error = new HashMap<>();
+        error.put("fecha", LocalDateTime.now());
+        error.put("mensaje", exception.getMessage());
+        error.put("status", HttpStatus.BAD_REQUEST.value());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> manejarValidaciones(MethodArgumentNotValidException exception) {
         Map<String, String> errores = new HashMap<>();
