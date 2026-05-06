@@ -4,7 +4,7 @@ public record ClienteResponseDto(
         Long id,
         String nombre,
         String apellido,
-        String correo,
+        String email,
         String telefono,
         String direccion
 ) {

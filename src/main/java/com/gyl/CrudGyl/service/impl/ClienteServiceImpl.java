@@ -22,9 +22,9 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public ClienteResponseDto crear(ClienteRequestDto dto) {
-        if (clienteRepository.existsByEmail(dto.correo())) {
+        if (clienteRepository.existsByEmail(dto.email())) {
             throw new EmailExistenteException(
-                    "Ya existe un cliente con el mail " + dto.correo()
+                    "Ya existe un cliente con el mail " + dto.email()
             );
         }
         Cliente cliente = ClienteMapper.toEntity(dto);
@@ -70,9 +70,9 @@ public class ClienteServiceImpl implements ClienteService {
                 .orElseThrow(() -> new RecursosNoEncontradoException(
                         "No se encontro el cliente con el id " + id
                 ));
-        if (!cliente.getCorreo().equals(dto.correo()) && clienteRepository.existsByEmail(dto.correo())) {
+        if (!cliente.getEmail().equals(dto.email()) && clienteRepository.existsByEmail(dto.email())) {
             throw new EmailExistenteException(
-                    "Ya existe un cliente con el mail " + dto.correo()
+                    "Ya existe un cliente con el mail " + dto.email()
             );
         }
         ClienteMapper.updateEntity(cliente, dto);
