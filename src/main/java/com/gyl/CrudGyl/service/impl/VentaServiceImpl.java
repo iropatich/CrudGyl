@@ -50,13 +50,8 @@ public class VentaServiceImpl implements VentaService {
                     .orElseThrow(() -> new RecursosNoEncontradoException(
                             "No se ha encontrado el producto con el id " + detalle.idProducto()
                     ));
-            if (producto.getStock() < detalle.cantidad()) {
-                throw new StockInsuficienteException(
-                        "No hay suficiente stock del producto " + producto.getNombre()
-                );
-            }
 
-            producto.setStock(producto.getStock() - detalle.cantidad());
+            ajustarStock(producto, detalle.cantidad());
             productoRepository.save(producto);
 
             double subtotal = producto.getPrecio() * detalle.cantidad();
@@ -93,5 +88,14 @@ public class VentaServiceImpl implements VentaService {
                 .orElseThrow(() -> new RecursosNoEncontradoException(
                         "No se ha encontrado la venta con el di " + id
                 ));
+    }
+
+    private void ajustarStock(Producto producto, Integer cantidad) {
+        if (producto.getStock() < cantidad) {
+            throw new StockInsuficienteException(
+                    "No hay suficiente stock del producto " + producto.getNombre()
+            );
+        }
+        producto.setStock(producto.getStock() - cantidad);
     }
 }

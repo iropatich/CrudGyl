@@ -30,6 +30,6 @@ public class Venta {
     @JoinColumn(name = "idCliente", nullable = false)
     private Cliente cliente;
 
-    @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "venta", cascade = CascadeType.PERSIST)
     private List<DetalleVenta> detallesVenta;
 }

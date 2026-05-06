@@ -3,6 +3,7 @@ package com.gyl.CrudGyl.service.impl;
 import com.gyl.CrudGyl.dto.cliente.ClienteRequestDto;
 import com.gyl.CrudGyl.dto.cliente.ClienteResponseDto;
 import com.gyl.CrudGyl.entity.Cliente;
+import com.gyl.CrudGyl.exception.EmailExistenteException;
 import com.gyl.CrudGyl.exception.RecursosNoEncontradoException;
 import com.gyl.CrudGyl.mapper.ClienteMapper;
 import com.gyl.CrudGyl.repository.ClienteRepository;
@@ -21,6 +22,11 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public ClienteResponseDto crear(ClienteRequestDto dto) {
+        if (clienteRepository.existsByEmail(dto.email())) {
+            throw new EmailExistenteException(
+                    "Ya existe un cliente con el mail " + dto.email()
+            );
+        }
         Cliente cliente = ClienteMapper.toEntity(dto);
         Cliente guardado = clienteRepository.save(cliente);
         return ClienteMapper.toResponseDto(guardado);
@@ -64,6 +70,11 @@ public class ClienteServiceImpl implements ClienteService {
                 .orElseThrow(() -> new RecursosNoEncontradoException(
                         "No se encontro el cliente con el id " + id
                 ));
+        if (!cliente.getEmail().equals(dto.email()) && clienteRepository.existsByEmail(dto.email())) {
+            throw new EmailExistenteException(
+                    "Ya existe un cliente con el mail " + dto.email()
+            );
+        }
         ClienteMapper.updateEntity(cliente, dto);
         Cliente guardado = clienteRepository.save(cliente);
         return ClienteMapper.toResponseDto(guardado);
