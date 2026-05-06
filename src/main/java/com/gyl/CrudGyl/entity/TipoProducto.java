@@ -23,4 +23,7 @@ public class TipoProducto {
 
     @Column(nullable = false, length = 100)
     private String descripcion;
+
+    @Column(nullable = false)
+    private Boolean estado = true;
 }

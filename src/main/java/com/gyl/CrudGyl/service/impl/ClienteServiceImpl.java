@@ -34,7 +34,7 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public List<ClienteResponseDto> listar() {
-        return clienteRepository.findAll()
+        return clienteRepository.findAllByEstadoTrue()
                 .stream()
                 .map(ClienteMapper::toResponseDto)
                 .toList();
@@ -42,7 +42,7 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public ClienteResponseDto buscarPorId(Long id) {
-        return clienteRepository.findById(id)
+        return clienteRepository.findByIdAndEstadoTrue(id)
                 .map(ClienteMapper::toResponseDto)
                 .orElseThrow(() -> new RecursosNoEncontradoException(
                         "No se encontroe el cliente con el id " + id
@@ -51,7 +51,7 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public List<ClienteResponseDto> buscarNombre(String nombre) {
-        List<ClienteResponseDto> clientes = clienteRepository.findByNombre(nombre)
+        List<ClienteResponseDto> clientes = clienteRepository.findByNombreAndEstadoTrue(nombre)
                 .stream()
                 .map(ClienteMapper::toResponseDto)
                 .toList();
@@ -82,10 +82,11 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     public void eliminar(Long id) {
-        Cliente cliente = clienteRepository.findById(id)
+        Cliente cliente = clienteRepository.findByIdAndEstadoTrue(id)
                 .orElseThrow(() -> new RecursosNoEncontradoException(
                         "No se encontro el cliente con el id " + id
                 ));
-        clienteRepository.delete(cliente);
+        cliente.setEstado(false);
+        clienteRepository.save(cliente);
     }
 }
