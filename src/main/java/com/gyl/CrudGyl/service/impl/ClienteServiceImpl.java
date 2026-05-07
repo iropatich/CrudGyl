@@ -4,6 +4,7 @@ import com.gyl.CrudGyl.dto.cliente.ClienteRequestDto;
 import com.gyl.CrudGyl.dto.cliente.ClienteResponseDto;
 import com.gyl.CrudGyl.entity.Cliente;
 import com.gyl.CrudGyl.exception.EmailExistenteException;
+import com.gyl.CrudGyl.exception.RecursoYaActivoException;
 import com.gyl.CrudGyl.exception.RecursosNoEncontradoException;
 import com.gyl.CrudGyl.mapper.ClienteMapper;
 import com.gyl.CrudGyl.repository.ClienteRepository;
@@ -87,6 +88,21 @@ public class ClienteServiceImpl implements ClienteService {
                         "No se encontro el cliente con el id " + id
                 ));
         cliente.setEstado(false);
+        clienteRepository.save(cliente);
+    }
+
+    @Override
+    public void restaurar(Long id) {
+        Cliente cliente = clienteRepository.findById(id)
+                .orElseThrow(() -> new RecursosNoEncontradoException(
+                        "No se encontro el cliente con el id " + id
+                ));
+        if (cliente.getEstado()) {
+            throw new RecursoYaActivoException(
+                    "El cliente ya se encuentra activo"
+            );
+        }
+        cliente.setEstado(true);
         clienteRepository.save(cliente);
     }
 }
