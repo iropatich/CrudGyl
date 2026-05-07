@@ -18,4 +18,6 @@ public interface ProductoService {
     void eliminar(Long id);
 
     List<ProductoResponseDto> buscarNombre(String nombre);
+
+    void restaurar(Long id);
 }

@@ -53,4 +53,10 @@ public class ClienteController {
     public void eliminar(@PathVariable Long id) {
         clienteService.eliminar(id);
     }
+
+    @PutMapping("/restaurar/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void restaurar(@PathVariable Long id) {
+        clienteService.restaurar(id);
+    }
 }

@@ -53,4 +53,10 @@ public class ProductoController {
     public List<ProductoResponseDto> buscarNombre(@Valid @PathVariable String nombre) {
         return productoService.buscarNombre(nombre);
     }
+
+    @PutMapping("/restaurar/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void restaurar(@PathVariable Long id) {
+        productoService.restaurar(id);
+    }
 }

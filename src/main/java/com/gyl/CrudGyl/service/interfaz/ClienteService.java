@@ -17,4 +17,6 @@ public interface ClienteService {
     ClienteResponseDto actualizar(Long id, ClienteRequestDto dto);
 
     void eliminar(Long id);
+
+    void restaurar(Long id);
 }
