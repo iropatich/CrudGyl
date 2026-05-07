@@ -17,4 +17,6 @@ public interface TipoProductoService {
     TipoProductoResponseDto actualizar(Long id, TipoProductoRequestDto dto);
 
     void eliminar(Long id);
+
+    void restaurar(Long id);
 }

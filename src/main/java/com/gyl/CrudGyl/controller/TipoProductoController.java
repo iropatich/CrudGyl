@@ -53,4 +53,10 @@ public class TipoProductoController {
     public void eliminar(@PathVariable Long id) {
         tipoProductoService.eliminar(id);
     }
+
+    @PutMapping("/restaurar/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void restaurar(@PathVariable Long id) {
+        tipoProductoService.restaurar(id);
+    }
 }

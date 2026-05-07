@@ -4,6 +4,7 @@ import com.gyl.CrudGyl.dto.producto.ProductoRequestDto;
 import com.gyl.CrudGyl.dto.producto.ProductoResponseDto;
 import com.gyl.CrudGyl.entity.Producto;
 import com.gyl.CrudGyl.entity.TipoProducto;
+import com.gyl.CrudGyl.exception.RecursoYaActivoException;
 import com.gyl.CrudGyl.exception.RecursosNoEncontradoException;
 import com.gyl.CrudGyl.mapper.ProductoMapper;
 import com.gyl.CrudGyl.repository.ProductoRepository;
@@ -94,5 +95,20 @@ public class ProductoServiceImpl implements ProductoService {
             );
         }
         return productos;
+    }
+
+    @Override
+    public void restaurar(Long id) {
+        Producto producto = productoRepository.findById(id)
+                .orElseThrow(() -> new RecursosNoEncontradoException(
+                        "No se ha encontrado el producto con el id " + id
+                ));
+        if (producto.getEstado()) {
+            throw new RecursoYaActivoException(
+                    "El producto ya se encuentra activo"
+            );
+        }
+        producto.setEstado(true);
+        productoRepository.save(producto);
     }
 }
