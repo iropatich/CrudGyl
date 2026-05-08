@@ -4,6 +4,7 @@ import com.gyl.CrudGyl.dto.producto.ProductoRequestDto;
 import com.gyl.CrudGyl.dto.producto.ProductoResponseDto;
 import com.gyl.CrudGyl.entity.Producto;
 import com.gyl.CrudGyl.entity.TipoProducto;
+import com.gyl.CrudGyl.exception.RecursoNoActivoException;
 import com.gyl.CrudGyl.exception.RecursoYaActivoException;
 import com.gyl.CrudGyl.exception.RecursosNoEncontradoException;
 import com.gyl.CrudGyl.mapper.ProductoMapper;
@@ -103,12 +104,31 @@ public class ProductoServiceImpl implements ProductoService {
                 .orElseThrow(() -> new RecursosNoEncontradoException(
                         "No se ha encontrado el producto con el id " + id
                 ));
+        validacionesRestaurarProducto(producto);
+        producto.setEstado(true);
+        productoRepository.save(producto);
+    }
+
+    private void validacionesRestaurarProducto(Producto producto) {
+        validarProductoYaActivo(producto);
+        validarSiTipoProductoActivo(producto);
+    }
+
+    private void validarProductoYaActivo(Producto producto) {
         if (producto.getEstado()) {
             throw new RecursoYaActivoException(
                     "El producto ya se encuentra activo"
             );
         }
-        producto.setEstado(true);
-        productoRepository.save(producto);
+    }
+
+    private void validarSiTipoProductoActivo(Producto producto) {
+        if (!producto.getTipoProducto().getEstado()) {
+            throw new RecursoNoActivoException(
+                    "No se puede restaurar porque el tipo de producto " +
+                            producto.getTipoProducto().getNombre()
+                            + " Esta inactivo"
+            );
+        }
     }
 }
