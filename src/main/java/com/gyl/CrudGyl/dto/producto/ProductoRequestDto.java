@@ -18,6 +18,7 @@ public record ProductoRequestDto(
         Integer stock,
 
         @NotNull(message = "El tipo de producto es obligatorio")
+        @Min(value = 1, message = "El id debe ser mayor o igual a 1")
         Long idTipoProducto
 ) {
 
