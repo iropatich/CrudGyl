@@ -34,40 +34,12 @@ public class VentaServiceImpl implements VentaService {
 
     @Override
     public VentaResponseDto crear(VentaRequestDto dto) {
-        Cliente cliente = clienteRepository.findById(dto.idCliente())
-                .orElseThrow(() -> new RecursosNoEncontradoException(
-                        "No se ha encontrado el cliente con el id " + dto.idCliente()
-                ));
-        Venta venta = new Venta();
-        venta.setFecha(LocalDateTime.now());
-        venta.setCliente(cliente);
+        Cliente cliente = buscarClienteActivo(dto.idCliente());
+        Venta venta = crearVenta(cliente);
 
-        List<DetalleVenta> listaDetallesVenta = new ArrayList<>();
-        double total = 0;
-
-        for (DetalleVentaRequestDto detalle : dto.detallesVenta()) {
-            Producto producto = productoRepository.findById(detalle.idProducto())
-                    .orElseThrow(() -> new RecursosNoEncontradoException(
-                            "No se ha encontrado el producto con el id " + detalle.idProducto()
-                    ));
-
-            ajustarStock(producto, detalle.cantidad());
-            productoRepository.save(producto);
-
-            double subtotal = producto.getPrecio() * detalle.cantidad();
-
-            DetalleVenta detalleVenta = new DetalleVenta();
-            detalleVenta.setCantidad(detalle.cantidad());
-            detalleVenta.setPrecioUnitario(producto.getPrecio());
-            detalleVenta.setSubtotal(subtotal);
-            detalleVenta.setVenta(venta);
-            detalleVenta.setProducto(producto);
-
-            listaDetallesVenta.add(detalleVenta);
-            total += subtotal;
-        }
-        venta.setDetallesVenta(listaDetallesVenta);
-        venta.setTotal(total);
+        List<DetalleVenta> detalles = crearDetallesVenta(dto.detallesVenta(), venta);
+        venta.setDetallesVenta(detalles);
+        venta.setTotal(calcularTotal(detalles));
 
         Venta guardada = ventaRepository.save(venta);
         return VentaMapper.toResponseDto(guardada);
@@ -88,6 +60,62 @@ public class VentaServiceImpl implements VentaService {
                 .orElseThrow(() -> new RecursosNoEncontradoException(
                         "No se ha encontrado la venta con el di " + id
                 ));
+    }
+
+
+    private List<DetalleVenta> crearDetallesVenta(List<DetalleVentaRequestDto> listaDetallesDto, Venta venta) {
+        List<DetalleVenta> detalles = new ArrayList<>();
+
+        for (DetalleVentaRequestDto detalleDto: listaDetallesDto) {
+            Producto producto = buscarProductoActivo(detalleDto.idProducto());
+            ajustarStock(producto, detalleDto.cantidad());
+            productoRepository.save(producto);
+
+            DetalleVenta detalle = crearDetalleVenta(venta, producto, detalleDto.cantidad());
+            detalles.add(detalle);
+        }
+        return detalles;
+    }
+
+    private Cliente buscarClienteActivo(Long id) {
+        return clienteRepository.findByIdAndEstadoTrue(id)
+                .orElseThrow(() -> new RecursosNoEncontradoException(
+                        "No se ha encontrado el cliente con el id " + id
+                ));
+    }
+
+    private Producto buscarProductoActivo(Long id) {
+        return productoRepository.findByIdAndEstadoTrue(id)
+                .orElseThrow(() -> new RecursosNoEncontradoException(
+                        "No se ha encontrado el producto con el id " + id
+                ));
+    }
+
+    private Venta crearVenta(Cliente cliente) {
+        Venta venta = new Venta();
+        venta.setFecha(LocalDateTime.now());
+        venta.setCliente(cliente);
+
+        return venta;
+    }
+
+    private DetalleVenta crearDetalleVenta(Venta venta, Producto producto, Integer cantidad) {
+        double subtotal = producto.getPrecio() * cantidad;
+
+        DetalleVenta detalleVenta = new DetalleVenta();
+        detalleVenta.setCantidad(cantidad);
+        detalleVenta.setPrecioUnitario(producto.getPrecio());
+        detalleVenta.setSubtotal(subtotal);
+        detalleVenta.setVenta(venta);
+        detalleVenta.setProducto(producto);
+
+        return detalleVenta;
+    }
+
+    private double calcularTotal(List<DetalleVenta> detalles) {
+        return detalles.stream()
+                .mapToDouble(DetalleVenta::getSubtotal)
+                .sum();
     }
 
     private void ajustarStock(Producto producto, Integer cantidad) {
